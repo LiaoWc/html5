@@ -1,0 +1,111 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <script>
+        var meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content = "width=device-width," +
+                "initial-scale=" + 1 / window.devicePixelRatio + "" +
+                ",user-scalable=no";
+        document.head.appendChild(meta);
+    </script>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="full-screen" content="yes"/>
+    <meta name="screen-orientation" content="portrait"/>
+    <meta name="x5-fullscreen" content="true"/>
+    <meta name="360-fullscreen" content="true"/>
+    <title>DuLi Engine</title>
+    <style>
+
+
+        @font-face {
+            font-family: 'Nunito-Regular';
+            src: url(assets/Nunito-Regular.ttf) format('truetype');
+        }
+
+        @font-face {
+            font-family: 'Nunito-Bold';
+            src: url(assets/Nunito-Bold.ttf) format('truetype');
+        }
+
+        /*@font-face {*/
+        /*font-family: 'MFYueYuan_Noncommercial-Regular';*/
+        /*src: url(assets/MFYueYuan_Noncommercial-Regular.ttf) format('truetype');*/
+        /*}*/
+    </style>
+</head>
+<p style="padding:0;position: absolute;font-family:'Nunito-Bold';opacity: 0">1</p>
+<p style="padding:0;position: absolute;font-family:'Nunito-Regular';opacity: 0">1</p>
+<!--<p style="padding:0;position: absolute;font-family:'MFYueYuan_Noncommercial-Regular';opacity: 0">1</p>-->
+<body oncontextmenu="return false;" style="overflow:hidden;padding:0; margin: 0; background: #fff;">
+<script src="engine/thirdPart/preloadjs.min.js"></script>
+<script>
+    var list = [
+
+        'engine/canvas.js',
+        'engine/mainLoop.js',
+
+//        'engine/values.js',
+
+        'engine/manager.js',
+        'engine/ecs/entity.js',
+        'engine/ecs/system.js',
+        'engine/ecs/component.js',
+
+
+
+        'engine/ecs/component/node.js',
+        'engine/ecs/component/parent.js',
+        'engine/ecs/component/children.js',
+        'engine/ecs/component/hierarchy.js',
+        'engine/ecs/component/render.js',
+        'engine/ecs/component/size.js',
+
+        'engine/ecs/component/mouse.js',
+        'engine/ecs/component/touch.js',
+        'engine/ecs/component/resize.js',
+
+
+        'engine/ecs/component/image.js',
+        'engine/ecs/component/text.js',
+        'engine/ecs/component/domInput.js',
+        'engine/ecs/component/rect.js',
+
+
+        'engine/ecs/custom/registeredComponentWindow.js',
+        'engine/ecs/custom/inspector.js',
+
+
+        'engine/init.js',
+
+        'engine/preload.js',
+
+        'scripts/main.js',
+        'scripts/colors.js',
+        'scripts/words.js',
+
+        'scripts/editor.js',
+        'scripts/editor_menu.js',
+        'scripts/editor_project.js',
+        'scripts/editor_inspector.js',
+        'scripts/editor_stage.js',
+        'scripts/editor_component.js',
+        'scripts/ui_button_editor.js',
+        'scripts/ui_inspector_property.js',
+        'scripts/ui_component_toggle.js',
+        'scripts/ui_menu.js',
+    ];
+    var _loadJs = function (aSrc) {
+
+        var tScript = document.createElement('script');
+        tScript.src = aSrc;
+//        var tTime = new Date().getTime();
+//        tScript.src = aSrc + '?' + tTime;
+        document.body.appendChild(tScript);
+    }
+    for (var i in list) {
+        _loadJs(list[i])
+    }
+</script>
+</body>
+</html>
