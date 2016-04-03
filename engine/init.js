@@ -1,82 +1,34 @@
 /**
  * Created by liao on 16/2/7.
  */
-window.engine = {};
-engine.loader = new (function() {
-    this.maxConnections = 5;
-    var connections = [];
 
-    this.loaded = 0;
-    this.total = 0;
-    this.resource = null;
-    var connection = function() {
-        this.xhr = new XMLHttpRequest();
-        // xhr.onreadystatechange = function(event) {
-        //     // console.log(xhr.readyState, xhr.status);
-        //     if (xhr.readyState == 4 && xhr.status == 200) {
-        //         console.log("load")
-        //         var img = new Image();
-        //         img.src = xhr.responseURL;
-        //         img.onload = function() {
-        //             console.log("load")
-        //         }
-        //     }
-        // }
-        // xhr.onerror = function(event) {
-        //     consol.log("error", event);
-        // }
-        // xhr.onprogress = function(event) {
-        //     console.log("onprogress", (event.loaded / event.total * 100).toFixed(2));
-        // }
-        // xhr.open("GET", "assets/jwyg1.png", true);
-        // xhr.setRequestHeader("Content-Type", "image/png");
-        // xhr.send();
-    }
-    connection.prototype.loadFile = function(aFile) {
-        console.log("load", aFile);
-        this.xhr.open("GET", aFile, true);
-        console.log(this);
-        // this.xhr.setRequestHeader("Content-Type", "image/png");
-        var self = this;
-        var loader = engine.loader;
-        this.xhr.onreadystatechange = function(event) {
-            // console.log(xhr.readyState, xhr.status);
-            if (self.xhr.readyState == 4 && self.xhr.status == 200) {
-                loader.loaded += 1;
-                if (loader.loaded + loader.maxConnections < loader.total) {
-                    self.loadFile(loader.resource[loader.loaded + loader.maxConnections])
-                }
-            }
-        }
-        this.xhr.send();
-    }
-    for (var i = 0; i < this.maxConnections; ++i) {
-        connections.push(new connection());
-    }
-    this.loadResource = function(aResource) {
-        this.resource = aResource;
-        this.total = aResource.length;
-        for (var i = 0; i < this.total; ++i) {
-            if (i == this.maxConnections) {
+window.addEventListener('load', function () {
+    engine.dpr = window.devicePixelRatio;
+    function IsPC() {
+        var userAgentInfo = navigator.userAgent;
+        var Agents = ["Android", "iPhone",
+            "SymbianOS", "Windows Phone",
+            "iPad", "iPod"];
+        var flag = true;
+        for (var v = 0; v < Agents.length; v++) {
+            if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                flag = false;
                 break;
-            } else {
-                connections[i].loadFile(this.resource[i]);
             }
         }
+        return flag;
     }
-})();
-window.addEventListener('load', function() {
+    engine.platform = IsPC() ? "Desktop" : "Mobile";
     console.log('window.load');
     var base = {
         path: "engine/base",
         type: ".js",
         files: [
             "node",
-            "relation",
+            "children",
+            "parent",
             "hierarchy",
-            "size",
-            "anchorPoint",
-            "renderer"
+            "render"
         ]
     }
     var draw = {
@@ -109,23 +61,82 @@ window.addEventListener('load', function() {
         ]
     }
 
+
+    var framework = {
+        path: "engine",
+        type: ".js",
+        files: [
+            "component",
+            "entity",
+            "system",
+            "manager",
+            "mainLoop",
+            // "animation",
+            // "timer"
+        ]
+    }
+
+
     var modules = [
+        framework,
         base,
-        draw,
-        io,
-        scheduler
+        draw
+        // draw,
+        // io,
+        // scheduler,
+        // assets,
     ];
-    var resource = [];
     for (var i = 0, len = modules.length; i < len; ++i) {
         var module = modules[i];
-        var path = module.path;
-        var type = module.type;
         var files = module.files;
         for (var j = 0, len2 = files.length; j < len2; ++j) {
-            resource.push(path + "/" + files[j] + type);
+            // resource.push(path + "/" + files[j] + type);
+            engine.loader.addResource({
+                filePath: module.path,
+                fileName: files[j],
+                fileType: module.type
+            })
         }
     }
-    engine.loader.loadResource(resource);
+    engine.loader.load();
+
+    engine.loader.onProgress = function (args) {
+        // console.log(args)
+    }
+    engine.loader.onLoaded = function (args) {
+        //console.log(args.fileName)
+        if (args.fileType == ".js") {
+            // var file = args.filePath + "/" + args.fileName + args.fileType;
+            // var script = document.createElement("script");
+            // script.src = file;
+            // document.body.appendChild(script);
+            eval(args.response)
+        }
+    }
+    engine.loader.onFinish = function () {
+        var manager = engine.manager;
+
+        for (var i in engine.registerComponent) {
+            manager.registerComponent(engine.registerComponent[i]);
+        }
+        // console.log(engine)
+        engine.registerSystem.sort(function (a, b) {
+            if (a.priority > b.priority) {
+                return 1;
+            } else if (a.priority == b.priority) {
+                return 0
+            } else {
+                return -1;
+            }
+
+        });
+        for (var i in engine.registerSystem) {
+            manager.registerSystem(engine.registerSystem[i]);
+        }
+
+        engine.run();
+        app.init();
+    }
     // var media = {
     //     path: "engine/media",
     //     type: ".js",
@@ -162,27 +173,8 @@ window.addEventListener('load', function() {
     // console.log(fileText, fileName);
 
 
-
     // window.engine = window.engine || {};
-    // var manager = engine.manager;
 
-    // for (var i in engine.registerComponent) {
-    //     manager.registerComponent(engine.registerComponent[i]);
-    // }
-
-    // engine.registerSystem.sort(function (a, b) {
-    //     if (a.priority > b.priority) {
-    //         return 1;
-    //     }else if(a.priority == b.priority){
-    //         return 0
-    //     }else{
-    //         return -1;
-    //     }
-
-    // });
-    // for (var i in engine.registerSystem) {
-    //     manager.registerSystem(engine.registerSystem[i]);
-    // }
     // engine.run();
     // engine.game();
 

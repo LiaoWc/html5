@@ -1,15 +1,14 @@
 window.engine = window.engine || {};
-(function () {
-    this.system = function (args) {
+(function() {
+    this.system = function(args) {
 
         //系统名称
         this.name = args.name;
         //系统关联的组件名称
         this.components = {};
-        //系统未更新的组件
-        this.notUpdatedComponents = {};
-        //系统已经更新的组件
+        //系统发生更新的组件
         this.updatedComponents = {};
+        //系统是否发生更新
         this.beUpdated = false;
 
         var onInit = args.onInit;
@@ -17,57 +16,68 @@ window.engine = window.engine || {};
         var onUpdate = args.onUpdate;
         var onRemove = args.onRemove;
         var onLoop = args.onLoop;
-
-        this.onAdd = function (args) {
-            var aComponent = args.component;
-            var tId = aComponent.entity.id;
-            this.components[tId] = aComponent;
-            this.notUpdatedComponents[tId] = true;
-            this.beUpdated = true;
-            if (onAdd) {
-                onAdd.call(this, args);
-            }
-        };
-        this.onRemove = function (args) {
-            var id = args.component.entity.id;
-            console.log("remove",id,this.name)
-            delete this.components[id];
-            delete this.notUpdatedComponents[id];
-            delete this.updatedComponents[id];
-
-            this.beUpdated = true;
-            if (onRemove) {
-                onRemove.call(this, args);
-            }
-        };
-
-        this.onUpdate = function (args) {
-            var aComponent = args.component;
-            if (aComponent.entity) {
-                var tId = aComponent.entity.id;
-                this.notUpdatedComponents[tId] = true;
+        if (onAdd) {
+            this.onAdd = function(aComponent) {
+                var id = aComponent.entity.id;
+                this.components[id] = aComponent;
+                this.updatedComponents[id] = aComponent;
                 this.beUpdated = true;
-            }
-            if (onUpdate) {
-                onUpdate.call(this, args);
-            }
-        };
-        this.onLoop = function (tDelta) {
-            //移交任务
-            for (var i in this.updatedComponents) {
-                delete this.updatedComponents[i];
-            }
-            for (var i in this.notUpdatedComponents) {
-                this.updatedComponents[i] = true;
-            }
-            this.notUpdatedComponents = {};
+                onAdd.call(this, aComponent);
+            };
+        } else {
+            this.onAdd = function(aComponent) {
+                var id = aComponent.entity.id;
+                this.components[id] = aComponent;
+                this.updatedComponents[id] = aComponent;
+                this.beUpdated = true;
 
+            };
+        }
+        if (onRemove) {
+            this.onRemove = function(aComponent) {
+                var id = aComponent.entity.id;
+                delete this.components[id];
+                delete this.updatedComponents[id];
+                this.beUpdated = true;
+                onRemove.call(this, aComponent);
+            };
+        } else {
+            this.onRemove = function(aComponent) {
+                var id = aComponent.entity.id;
+                delete this.components[id];
+                delete this.updatedComponents[id];
+                this.beUpdated = true;
+            };
+        }
 
-            if (onLoop) {
-                onLoop.call(this, tDelta);
-            }
-            this.beUpdated = false;
-        };
+        if (onUpdate) {
+            this.onUpdate = function(aComponent) {
+                var id = aComponent.entity.id;
+                this.beUpdated = true;
+                this.updatedComponents[id] = aComponent;
+                onUpdate.call(this, aComponent);
+            };
+        } else {
+            this.onUpdate = function(aComponent) {
+                var id = aComponent.entity.id;
+                this.beUpdated = true;
+                this.updatedComponents[id] = aComponent;
+            };
+        }
+
+        if (onLoop) {
+            this.onLoop = function(aDelta) {
+                onLoop.call(this, aDelta);
+                this.beUpdated = false;
+                this.updatedComponents = {};
+            };
+        } else {
+            this.onLoop = function(aDelta) {
+                this.beUpdated = false;
+                this.updatedComponents = {};
+            };
+        }
+
 
         if (onInit) {
             onInit.call(this);

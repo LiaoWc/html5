@@ -5,11 +5,10 @@ window.engine = window.engine || {};
         name: "image",
         needs: ["node"],
         property: [
-            {key: 'file', value: ""},
-            {key: 'src', value: null},
+            {key: 'file', value: null},
+            {key: 'drawCall', value: null},
             {key: 'width', value: 0},
             {key: 'height', value: 0},
-            {key: 'renderScale', value: null},
         ]
     });
     engine.registerSystem = engine.registerSystem || [];
@@ -17,49 +16,35 @@ window.engine = window.engine || {};
         name: "image",
         priority: 5,
         systemComponent: ["image"],
-        onInit: function () {
-        },
-        onAdd: function (args) {
-        },
-        onRemove: function (args) {
-        },
-        onUpdate: function (args) {
-            //console.log("image", args);
-            args.component.property.src = engine.getPreload().getResource(args.component.property.file);
-            args.component.property.width = args.component.property.src.width;
-            args.component.property.height = args.component.property.src.height;
+        //onInit: function () {
+        //},
+        //onAdd: function (aComponent) {
+        //},
+        //onRemove: function (aComponent) {
+        //},
+        onUpdate: function (aComponent) {
+            var img = app.resource[aComponent.property.file];
+            if (img) {
+                aComponent.property.width = img.width;
+                aComponent.property.height = img.height;
+                aComponent.property.drawCall = function (aCanvas) {
+                    var context = aCanvas.getContext("2d");
+                    var comRender = aComponent.entity.components.render;
+                    context.save();
+                    var comNode = aComponent.entity.components.node;
+                    var dx = comNode.property.width*comNode.property.anchorPointX;
+                    var dy = comNode.property.height*comNode.property.anchorPointY;
+                    context.translate(comRender.property.x , comRender.property.y);
+                    context.rotate(Math.PI/180*comRender.property.rotation);
+                    context.scale(comRender.property.scaleX, comRender.property.scaleY);
+                    context.drawImage(img, - dx, - dy);
+                    context.restore();
+                }
+            }
         },
         onLoop: function (aDelta) {
-
-            var renderUpdatedComponents = engine.manager.systems.render.updatedComponents;
-            for (var i in renderUpdatedComponents) {
-                this.updatedComponents[i] = true;
-            }
             for (var i in this.updatedComponents) {
-
-                var tEntity = engine.manager.getEntityById(i);
-                var tRender = tEntity.getComponent("render");
-                var tRenderProperty = tRender.property;
-                var tImage = tEntity.getComponent({name: "image"});
-                if (tImage && tImage.property.renderScale != tRenderProperty.scaleX) {
-
-                    var tImageProperty = tImage.property;
-                    var tResource = tImage.property.src;
-                    if (tImage != null) {
-                        tImage.property.renderScale = tRenderProperty.scaleX;
-                        //tRenderProperty.x += -tResource.width * tImageProperty.anchorPointX;
-                        //tRenderProperty.y += -tResource.height * tImageProperty.anchorPointY;
-                        var tCanvas = document.createElement('canvas');
-                        tCanvas.width = tResource.width * tRenderProperty.scaleX;
-                        tCanvas.height = tResource.height * tRenderProperty.scaleX;
-                        var tContext = tCanvas.getContext("2d");
-                        tContext.scale(tRenderProperty.scaleX, tRenderProperty.scaleY);
-                        tContext.drawImage(tResource, 0, 0);
-                        tRenderProperty.draw = tCanvas;
-                        tRender.update();
-                    }
-                }
-
+                this.updatedComponents[i].entity.components.render.property.drawCall = this.updatedComponents[i].property.drawCall;
             }
         }
     });

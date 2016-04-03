@@ -59,21 +59,21 @@ window.engine = window.engine || {};
         },
         onLoop: function (aDelta) {
 
-            var renderUpdatedComponents = engine.manager.systems.render.notUpdatedComponents;
-            for (var i in renderUpdatedComponents) {
-                //console.log("in")
+            // var renderUpdatedComponents = engine.manager.systems.render.notUpdatedComponents;
+            // for (var i in renderUpdatedComponents) {
+            //     //console.log("in")
 
-                var com = this.components[i];
-                if (com) {
-                    var dpr = engine.getDPR();
-                    var renderProperty = com.entity.components.render.property;
-                    com.element.style.width = com.property.width * renderProperty.scaleX / dpr;
-                    com.element.style.height = com.property.height * renderProperty.scaleY / dpr;
-                    com.element.style.fontSize = com.property.fontSize * renderProperty.scaleY / dpr +"px";
-                    com.element.style.top = renderProperty.y / dpr;
-                    com.element.style.left = renderProperty.x / dpr;
-                }
-            }
+            //     var com = this.components[i];
+            //     if (com) {
+            //         var dpr = engine.getDPR();
+            //         var renderProperty = com.entity.components.render.property;
+            //         com.element.style.width = com.property.width * renderProperty.scaleX / dpr;
+            //         com.element.style.height = com.property.height * renderProperty.scaleY / dpr;
+            //         com.element.style.fontSize = com.property.fontSize * renderProperty.scaleY / dpr +"px";
+            //         com.element.style.top = renderProperty.y / dpr;
+            //         com.element.style.left = renderProperty.x / dpr;
+            //     }
+            // }
         }
     });
 }).call(engine);

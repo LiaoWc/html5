@@ -3,29 +3,12 @@ window.engine = window.engine || {};
     engine.registerComponent = engine.registerComponent || [];
     this.registerComponent.push({
         name: "parent",
-        unique: true,
+        needs: ["node"],
         property: [
             {key: 'entity', value: null},
         ]
     });
     engine.registerSystem = engine.registerSystem || [];
-
-    var checkLoop = function (aEntity, aUpdatedComponents) {
-        var tChildren = aEntity.getComponent({name: "children"});
-        if (tChildren) {
-            var tEntities = tChildren.property.entities;
-            for (var i in tEntities) {
-                if (aUpdatedComponents[i] != true) {
-                    aUpdatedComponents[i] = true;
-                    var tEntity = engine.manager.entitiesWithId[i];
-                    tEntity.components.node.update();
-                    tEntity.components.parent.update();
-                    checkLoop(tEntity, aUpdatedComponents);
-                }
-            }
-        }
-    };
-
     this.registerSystem.push({
         name: "parent",
         priority: 3,
@@ -56,49 +39,47 @@ window.engine = window.engine || {};
         //},
         onUpdate: function (args) {
             //组件改变时触发
-            var childEntity = args.component.entity;
-            var parentEntity = args.component.property.entity;
-            //console.log(childEntity.flag, parentEntity.flag);
-            if (parentEntity) {
-                //console.log(parentEntity.getComponent({name: "children"}))
-                if (parentEntity.getComponent({name: "children"}) == null) {
-                    //var tChildren = engine.manager.newComponent({name: "children"});
-                    var tChildren = parentEntity.addComponent("children");
-                    tChildren.property.entities[childEntity.id] = true;
-                    tChildren.update();
-                    //console.log(tChildren.property.entities)
-                } else {
-                    var tChildren = parentEntity.getComponent({name: "children"});
-                    tChildren.property.entities[childEntity.id] = true;
-                }
-            }
+            // var childEntity = args.component.entity;
+            // var parentEntity = args.component.property.entity;
+            // //console.log(childEntity.flag, parentEntity.flag);
+            // if (parentEntity) {
+            //     //console.log(parentEntity.getComponent({name: "children"}))
+            //     if (parentEntity.getComponent({name: "children"}) == null) {
+            //         //var tChildren = engine.manager.newComponent({name: "children"});
+            //         var tChildren = parentEntity.addComponent("children");
+            //         tChildren.property.entities[childEntity.id] = true;
+            //         tChildren.update();
+            //         //console.log(tChildren.property.entities)
+            //     } else {
+            //         var tChildren = parentEntity.getComponent({name: "children"});
+            //         tChildren.property.entities[childEntity.id] = true;
+            //     }
+            // }
 
         },
         onLoop: function (aDelta) {
             //系统更新时触发
             //从改变的node中，检查是否有存在relation关系的节点
-            var nodeUpdatedComponents = engine.manager.systems.node.updatedComponents;
-            for (var i in nodeUpdatedComponents) {
-                var tComponent = this.components[i];
-                if (tComponent) {
-                    this.updatedComponents[i] = true;
-                }
-            }
             for (var i in this.updatedComponents) {
                 //console.log(i);
-                var tChild = engine.manager.entitiesWithId[i];
-                var tParent = tChild.components.parent.property.entity;
-                var tRender = tChild.components.render;
-                var tChildProperty = tRender.property;
-                var tParentProperty = tParent.components.render.property;
-                tChildProperty.x *= tParentProperty.scaleX;
-                tChildProperty.y *= tParentProperty.scaleY;
-                tChildProperty.x += tParentProperty.x;
-                tChildProperty.y += tParentProperty.y;
-                tChildProperty.scaleX *= tParentProperty.scaleX;
-                tChildProperty.scaleY *= tParentProperty.scaleY;
-                tChildProperty.rotation += tParentProperty.rotation;
-                tRender.update();
+                var comParent = this.updatedComponents[i];
+                var entityParentRender = comParent.property.entity.components.render;
+                var entityRender = comParent.entity.components.render;
+                //var entityNode = comParent.entity.components.node;
+                var r = -Math.PI / 180 * entityParentRender.property.rotation;
+                var x = entityRender.property.x * entityParentRender.property.scaleX;
+                var y = entityRender.property.y * entityParentRender.property.scaleY;
+                var newX = x * Math.cos(r) + y * Math.sin(r);
+                var newY = y * Math.cos(r) - x * Math.sin(r);
+                //console.log(x,y,newX,newY)
+                entityRender.property.x = newX + entityParentRender.property.x;
+                entityRender.property.y = newY + entityParentRender.property.y;
+                entityRender.property.scaleX *= entityParentRender.property.scaleX;
+                entityRender.property.scaleY *= entityParentRender.property.scaleY;
+                entityRender.property.rotation += entityParentRender.property.rotation;
+                entityRender.property.alpha *= entityParentRender.property.alpha;
+                entityRender.property.canvas = entityParentRender.property.canvas;
+                entityRender.update();
             }
         }
     });

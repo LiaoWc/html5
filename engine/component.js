@@ -12,7 +12,7 @@ window.engine = window.engine || {};
             this.property[tProperty.key] = tProperty.value;
         }
         this.update = function () {
-            engine.manager.componentUpdate({component: this});
+            engine.manager.componentUpdate(this);
         };
         this.removeSelf = function () {
             this.entity.removeComponent(this);

@@ -1,50 +1,48 @@
 window.engine = window.engine || {};
-(function () {
-    this.manager = new (function () {
+(function() {
+    this.manager = new (function() {
         //所有创建的实体
         var entitiesWithId = this.entitiesWithId = {};
-        var entitiesWithFLag = this.entitiesWithFLag = {};
+        var entitiesWithTag = this.entitiesWithTag = {};
         //创建实体数
         var entitiesCount = 0;
 
         var registerComponents = this.registerComponents = {};
-        var systemsWithName = this.systems = {};
-        var systemWithComponentName = {};
+        var registerSystems = this.registerSystems = {};
+        var systemWithComponents = {};
 
-        this.getEntityByFlag = function (aFlag) {
-            return entitiesWithFLag[aFlag]
-        }
-
-        this.newEntity = function () {
+        this.newEntity = function() {
             entitiesCount += 1;
-            var tEntity = new engine.entity();
-            tEntity.setId(entitiesCount);
-            entitiesWithId[entitiesCount] = tEntity;
-            return tEntity;
+            var entity = new engine.entity();
+            entity.id = entitiesCount;
+            entitiesWithId[entitiesCount] = entity;
+            return entity;
         };
-        this.removeEntity = function (aEntity) {
+        this.removeEntity = function(aEntity) {
             delete entitiesWithId[aEntity.id];
-            if (aEntity.flag) {
-                delete entitiesWithFLag[aEntity.flag];
+            if (aEntity.tag) {
+                delete entitiesWithTag[aEntity.tag];
             }
         };
-        this.getEntityById = function (aId) {
-            return entitiesWithId[aId];
-        };
-        this.getEntityByFlag = function (aFlag) {
-            return entitiesWithId[aFlag];
-        };
-        this.entitySetFlag = function (aEntity, aFlag) {
-            entitiesWithFLag[aFlag] = aEntity;
+        this.entitySetTag = function(aEntity, aTag) {
+            if (entitiesWithTag[aTag]) {
+                console.error("entitiesWithTag", aTag, "exist");
+            } else {
+                aEntity.tag = aTag;
+                entitiesWithTag[aTag] = aEntity;
+            }
         };
 
-        this.registerComponent = function (args) {
+        this.registerComponent = function(args) {
             var aComponentName = args.name;
+
             registerComponents[aComponentName] = args;
-            systemWithComponentName[aComponentName] = [];
+            systemWithComponents[aComponentName] = [];
+            //console.log(registerComponents)
         };
-        this.newComponent = function (aName) {
+        this.newComponent = function(aName) {
             var tRegisterComponentArgs = registerComponents[aName];
+            //console.log(registerComponents,aName)
             if (tRegisterComponentArgs == null) {
                 console.log(aName, "RegisterComponentArgs is null");
                 return
@@ -52,54 +50,49 @@ window.engine = window.engine || {};
             var tComponent = new engine.component(tRegisterComponentArgs);
             return tComponent;
         };
-        this.registerSystem = function (args) {
+
+        this.registerSystem = function(args) {
             var tSystem = new engine.system(args);
-            systemsWithName[args.name] = tSystem;
+            registerSystems[args.name] = tSystem;
             for (var i in args.systemComponent) {
                 var tComponentName = args.systemComponent[i];
-                systemWithComponentName[tComponentName] = systemWithComponentName[tComponentName] || [];
-                systemWithComponentName[tComponentName].push(args.name);
+                systemWithComponents[tComponentName] = systemWithComponents[tComponentName] || [];
+                systemWithComponents[tComponentName].push(args.name);
             }
         };
-        this.getSystem = function (aName) {
-           return systemsWithName[aName];
-        }
         //实体添加组件
-        this.entityAddComponent = function (aEntity, aComponent) {
+        this.entityAddComponent = function(aEntity, aComponent) {
             //通知关联的系统添加组件
             aComponent.entity = aEntity;
-            var tComponentSystem = systemWithComponentName[aComponent.name];
+            var tComponentSystem = systemWithComponents[aComponent.name];
             for (var i in tComponentSystem) {
                 var tSystemName = tComponentSystem[i];
-                var tSystem = systemsWithName[tSystemName];
-
-                tSystem.onAdd({
-                    component: aComponent
-                });
+                var tSystem = registerSystems[tSystemName];
+                tSystem.onAdd(aComponent);
             }
         };
-        this.entityRemoveComponent = function (aEntity, aComponent) {
+        //实体移除组件
+        this.entityRemoveComponent = function(aEntity, aComponent) {
             //通知关联的系统移除组件
-            var tComponentSystem = systemWithComponentName[aComponent.name];
+            var tComponentSystem = systemWithComponents[aComponent.name];
             for (var i in tComponentSystem) {
                 var tSystemName = tComponentSystem[i];
-                var tSystem = systemsWithName[tSystemName];
-                tSystem.onRemove({
-                    component: aComponent
-                });
+                var tSystem = registerSystems[tSystemName];
+                tSystem.onRemove(aComponent);
             }
         };
-        //组件更新属性
-        this.componentUpdate = function (args) {
-            var tComponentSystem = systemWithComponentName[args.component.name];
+        //组件更新
+        this.componentUpdate = function(aComponent) {
+            //通知关联的系统更新组件
+            var tComponentSystem = systemWithComponents[aComponent.name];
             for (var i in tComponentSystem) {
                 var tSystemName = tComponentSystem[i];
-                var tSystem = systemsWithName[tSystemName];
-                tSystem.onUpdate(args);
+                var tSystem = registerSystems[tSystemName];
+                tSystem.onUpdate(aComponent);
             }
         }
 
-        this.removeEntity = function (aEntity) {
+        this.removeEntity = function(aEntity) {
             //通知实体的所有组件，实体被移除
             for (var i in aEntity.components) {
                 aEntity.components[i].removeSelf();
@@ -107,21 +100,21 @@ window.engine = window.engine || {};
             aEntity.components = null;
             delete entitiesWithId[aEntity.id];
             if (aEntity.flag) {
-                delete entitiesWithFLag[aEntity.flag];
+                delete entitiesWithTag[aEntity.flag];
             }
         };
-        this.removeComponent = function (args) {
-            var tComponentSystem = systemWithComponentName[args.component.name];
+        this.removeComponent = function(aComponent) {
+            var tComponentSystem = systemWithComponents[aComponent.name];
             for (var i in tComponentSystem) {
                 var tSystemName = tComponentSystem[i];
-                var tSystem = systemsWithName[tSystemName];
-                tSystem.onRemove(args);
+                var tSystem = registerSystems[tSystemName];
+                tSystem.onRemove(aComponent);
             }
         }
 
-        this.mainLoop = function (aDelta) {
-            for (var i in systemsWithName) {
-                var tSystem = systemsWithName[i];
+        this.mainLoop = function(aDelta) {
+            for (var i in registerSystems) {
+                var tSystem = registerSystems[i];
                 tSystem.onLoop(aDelta);
             }
         };

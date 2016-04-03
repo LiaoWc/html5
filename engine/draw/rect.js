@@ -9,7 +9,7 @@ window.engine = window.engine || {};
             {key: 'lineColor', value: '#fff'},
             {key: 'lineWidth', value: 0},
             {key: 'fillColor', value: '#000'},
-            {key: 'draw', value: null},
+            {key: 'drawCall', value: null},
         ]
     });
     engine.registerSystem = engine.registerSystem || [];
@@ -43,37 +43,66 @@ window.engine = window.engine || {};
         //onRemove: function (args) {
         //    //组件移除时触发
         //},
-        onUpdate: function (args) {
-            //组件改变时触发
-            var tComponent = args.component;
-            var tProperty = tComponent.property;
+        onUpdate: function (aComponent) {
 
-            var tCanvas = document.createElement('canvas');
-            var tContext = tCanvas.getContext("2d");
-            tCanvas.width = tProperty.width;
-            tCanvas.height = tProperty.height;
+            aComponent.property.drawCall = function (aCanvas) {
+                var context = aCanvas.getContext("2d");
+                var comRender = aComponent.entity.components.render;
+                context.save();
+                var comNode = aComponent.entity.components.node;
+                var dx = comNode.property.width * comNode.property.anchorPointX;
+                var dy = comNode.property.height * comNode.property.anchorPointY;
+                context.translate(comRender.property.x, comRender.property.y);
+                context.rotate(Math.PI / 180 * comRender.property.rotation);
+                context.scale(comRender.property.scaleX, comRender.property.scaleY);
+                //context.drawImage(img, - dx, - dy);
+                context.globalAlpha = comRender.property.alpha;
 
-            tContext.fillStyle = tProperty.fillColor;
-            tContext.fillRect(0, 0, tProperty.width, tProperty.height);
-            if (tProperty.lineWidth != 0) {
-                tContext.lineWidth = tProperty.lineWidth;
-                tContext.strokeStyle = tProperty.lineColor;
-                tContext.strokeRect(0, 0, tProperty.width, tProperty.height);
+                console.log("rect",dx,dy)
+                context.fillStyle = aComponent.property.fillColor;
+                context.fillRect(-dx, -dy, aComponent.property.width, aComponent.property.height);
+                if (aComponent.property.lineWidth != 0) {
+                    context.lineWidth = aComponent.property.lineWidth;
+                    context.strokeStyle = aComponent.property.lineColor;
+                    context.strokeRect(0, 0, aComponent.property.width, aComponent.property.height);
+                }
+
+                context.restore();
             }
-            tProperty.draw = tCanvas;
+
+            //组件改变时触发
+            //var tComponent = args.component;
+            //var tProperty = tComponent.property;
+            //
+            //var tCanvas = document.createElement('canvas');
+            //var tContext = tCanvas.getContext("2d");
+            //tCanvas.width = tProperty.width;
+            //tCanvas.height = tProperty.height;
+            //
+            //tContext.fillStyle = tProperty.fillColor;
+            //tContext.fillRect(0, 0, tProperty.width, tProperty.height);
+            //if (tProperty.lineWidth != 0) {
+            //    tContext.lineWidth = tProperty.lineWidth;
+            //    tContext.strokeStyle = tProperty.lineColor;
+            //    tContext.strokeRect(0, 0, tProperty.width, tProperty.height);
+            //}
+            //tProperty.draw = tCanvas;
         },
         onLoop: function (aDelta) {
-            if(this.beUpdated){
+            if (this.beUpdated) {
+                //for (var i in this.updatedComponents) {
+                //    var tEntity = engine.manager.getEntityById(i);
+                //    var tComponent = this.components[i];
+                //    if (tComponent) {
+                //        var tProperty = tComponent.property;
+                //        var tRender = tEntity.getComponent("render");
+                //        var tRenderProperty = tRender.property;
+                //        tRenderProperty.draw = tProperty.draw;
+                //        tRender.update();
+                //    }
+                //}
                 for (var i in this.updatedComponents) {
-                    var tEntity = engine.manager.getEntityById(i);
-                    var tComponent = this.components[i];
-                    if (tComponent) {
-                        var tProperty = tComponent.property;
-                        var tRender = tEntity.getComponent("render");
-                        var tRenderProperty = tRender.property;
-                        tRenderProperty.draw = tProperty.draw;
-                        tRender.update();
-                    }
+                    this.updatedComponents[i].entity.components.render.property.drawCall = this.updatedComponents[i].property.drawCall;
                 }
             }
         }

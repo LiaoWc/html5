@@ -1,37 +1,26 @@
 window.engine = window.engine || {};
-(function () {
-    this.entity = function () {
+(function() {
+    this.entity = function() {
 
         //实例id
         this.id = null;
-        this.setId = function (aId) {
-            if (this.id == null) {
-                this.id = aId;
-            }
-        };
-        this.getId = function (aId) {
-            return this.id;
-        };
-        this.removeSelf = function () {
+
+        this.removeSelf = function() {
             for (var i in this.components) {
                 this.components[i].removeSelf();
             }
             engine.manager.removeEntity(this);
             this.id = null;
-            this.flag = null;
+            this.tag = null;
         };
 
-        this.flag = null;
-        this.setFlag = function (aFlag) {
-            this.flag = aFlag;
-            engine.manager.entitySetFlag(this, aFlag);
-        };
-        this.getFlag = function () {
-            return this.flag;
+        this.tag = null;
+        this.setTag = function(aTag) {
+            engine.manager.entitySetTag(this, aTag);
         };
 
         this.components = {};
-        this.addComponent = function (aName) {
+        this.addComponent = function(aName) {
             var tComponent = engine.manager.newComponent(aName);
             if (tComponent) {
                 //确认组件的唯一性
@@ -50,14 +39,12 @@ window.engine = window.engine || {};
             }
             return tComponent;
         };
-        this.removeComponent = function (aComponent) {
+        this.removeComponent = function(aComponent) {
             if (aComponent) {
                 engine.manager.entityRemoveComponent(this, aComponent);
-                delete  this.components[aComponent.name];
+                delete this.components[aComponent.name];
             }
         };
-        this.getComponent = function (aName) {
-            return this.components[aName];
-        };
+
     };
 }).call(engine);
