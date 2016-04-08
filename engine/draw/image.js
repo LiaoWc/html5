@@ -28,16 +28,18 @@ window.engine = window.engine || {};
                 aComponent.property.width = img.width;
                 aComponent.property.height = img.height;
                 aComponent.property.drawCall = function (aCanvas) {
+
                     var context = aCanvas.getContext("2d");
                     var comRender = aComponent.entity.components.render;
                     context.save();
+                    context.globalAlpha = comRender.property.alpha;
+                    context.translate(comRender.property.x * engine.dpr, comRender.property.y * engine.dpr);
+                    context.scale(comRender.property.scaleX * engine.dpr, comRender.property.scaleX * engine.dpr);
+                    context.rotate(Math.PI / 180 * comRender.property.rotation);
                     var comNode = aComponent.entity.components.node;
-                    var dx = comNode.property.width*comNode.property.anchorPointX;
-                    var dy = comNode.property.height*comNode.property.anchorPointY;
-                    context.translate(comRender.property.x , comRender.property.y);
-                    context.rotate(Math.PI/180*comRender.property.rotation);
-                    context.scale(comRender.property.scaleX, comRender.property.scaleY);
-                    context.drawImage(img, - dx, - dy);
+                    var dx = comNode.property.width * comNode.property.anchorPointX;
+                    var dy = comNode.property.height * comNode.property.anchorPointY;
+                    context.drawImage(img, -dx, -dy);
                     context.restore();
                 }
             }

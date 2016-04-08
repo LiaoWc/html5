@@ -1,0 +1,77 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <script>
+        var meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content = "width=device-width," +
+                "initial-scale=" + 1 / 1 + "" +
+                ",user-scalable=no";
+        document.head.appendChild(meta);
+    </script>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="full-screen" content="yes"/>
+    <meta name="screen-orientation" content="portrait"/>
+    <meta name="x5-fullscreen" content="true"/>
+    <meta name="360-fullscreen" content="true"/>
+    <title>DuLi Engine</title>
+    <style>
+        /*@font-face {*/
+        /*font-family: 'Nunito-Regular';*/
+        /*src: url(assets/Nunito-Regular.ttf) format('truetype');*/
+        /*}*/
+        /*@font-face {*/
+        /*font-family: 'MFYueYuan_Noncommercial-Regular';*/
+        /*src: url(assets/MFYueYuan_Noncommercial-Regular.ttf) format('truetype');*/
+        /*}*/
+    </style>
+</head>
+<body oncontextmenu="return false;" style="overflow:hidden;padding:0; margin: 0; background: #fff;">
+<p style="font-size: 60px">12312312</p>
+<script>
+    var canvas = document.createElement("canvas");
+    canvas.style.width = window.innerWidth;
+    canvas.style.height = window.innerHeight;
+    canvas.style.padding = "0";
+    canvas.style.margin = "0";
+    canvas.style.top = "0";
+    canvas.style.left = "0";
+    canvas.style.zIndex = 1;
+    canvas.style.position = "absolute";
+    function IsPC() {
+        var userAgentInfo = navigator.userAgent;
+        var Agents = ["Android", "iPhone",
+            "SymbianOS", "Windows Phone",
+            "iPad", "iPod"];
+        var flag = true;
+        for (var v = 0; v < Agents.length; v++) {
+            if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+    var initCanvas = function () {
+        if (IsPC()) {
+            canvas.width = window.innerWidth *window.devicePixelRatio;
+            canvas.height = window.innerHeight * window.devicePixelRatio;
+        } else {
+            canvas.width = window.innerWidth*window.devicePixelRatio;
+            canvas.height = window.innerHeight*window.devicePixelRatio;
+        }
+    };
+    initCanvas();
+    document.body.appendChild(canvas);
+    window.addEventListener('resize', initCanvas, false);
+    var context = canvas.getContext("2d");
+    context.font = "normal " + 60*window.devicePixelRatio + "px " + "sys";
+    context.fillStyle = "#000";
+    context.textBaseline = "top";
+    context.fillText(canvas.style.width + "," + canvas.style.height + ";" + canvas.width + "," + canvas.height, canvas.width/2, 0);
+
+</script>
+</body>
+
+</html>

@@ -14,8 +14,8 @@ window.engine = window.engine || {};
             {key: 'level', value: 0},
             {key: "timestamp", value: 0},
 
-            {key: 'canvas', value: true},
-            {key: 'drawCall', value: false},
+            {key: 'canvas', value: null},
+            {key: 'drawCall', value: null},
             //最近一次的绘制属性
             // { key: 'lastX', value: 0 },
             // { key: 'lastY', value: 0 },
@@ -33,19 +33,26 @@ window.engine = window.engine || {};
             this.rootEntity = null;
             this.renderOrder = [];
 
-            this.renderEntity = function (aEntity) {
-                var canvas = aEntity.components.render.property.canvas;
-                var context = canvas.getContext("2d");
+            this.renderEntity = function (aEntity, aCanvas) {
+                //console.log(aEntity.id)
+                //跳过未发生变化的实体
+                //if(this.updatedComponents[aEntity.id] == null){
+                //    return
+                //}
 
-                if (aEntity.components.parent == null) {
-                    context.clearRect(0, 0, canvas.width, canvas.height);
+                //var canvas = aEntity.components.render.property.canvas;
+                var context = aCanvas.getContext("2d");
+
+
+                if (aEntity.components.render.property.canvas) {
+                    context.clearRect(0, 0, aCanvas.width, aCanvas.height);
                 }
 
-
+                this.renderOrder.unshift(aEntity);
                 //排序
                 // console.log(engine.manager.registerSystems.hierarchy)
                 // var root = engine.manager.getSystem("hierarchy").root;
-                console.log("render")
+
 
                 var comChildren = aEntity.components.children;
                 if (comChildren) {
@@ -54,11 +61,17 @@ window.engine = window.engine || {};
 
                         var entity = comChildren.property.entities[i];
                         //console.log(entity.components.render.property)
-                        if (entity.components.render.property.drawCall) {
-                            entity.components.render.property.drawCall(canvas);
-
+                        if (entity.components.render.property.canvas) {
+                            if (entity.components.render.property.drawCall) {
+                                entity.components.render.property.drawCall(entity.components.render.property.canvas);
+                            }
+                            this.renderEntity(entity, entity.components.render.property.canvas);
+                        } else {
+                            if (entity.components.render.property.drawCall) {
+                                entity.components.render.property.drawCall(aCanvas);
+                            }
+                            this.renderEntity(entity, aCanvas);
                         }
-                        this.renderEntity(entity);
                     }
                 }
             };
@@ -67,37 +80,17 @@ window.engine = window.engine || {};
                 self.beUpdated = true;
             })
         },
-        onAdd: function (args) {
-
-        },
-        onUpdate: function (args) {
-            //console.log("render",args.component.entity.id);
-        },
+        //onAdd: function (args) {
+        //
+        //},
+        //onUpdate: function (args) {
+        //
+        //},
         onLoop: function (aDelta) {
             //系统更新时触发
             if (this.beUpdated && this.rootEntity != null) {
-                //var tComponents = this.components;
-
-                this.renderEntity(this.rootEntity);
-                //console.log(this.components)
-
-                // //console.log("render", root)
-                // for (var i = root.length - 1; i >= 0; i--) {
-                //     var tEntity = root[i];
-                //     //console.log(tEntity.components.zOrder.property)
-                //     var tRender = tEntity.getComponent("render");
-                //     var tProperty = tRender.property;
-                //     if (tProperty.draw) {
-                //         //console.log("render", i, tProperty.draw)
-                //         tContext.save();
-                //         tContext.scale(tProperty.scaleX, tProperty.scaleY);
-                //         tContext.translate(tProperty.x / tProperty.scaleX, tProperty.y / tProperty.scaleX);
-                //         //tContext.rotate(Math.PI/180*45);
-                //         tContext.drawImage(tProperty.draw, 0, 0);
-                //         tContext.restore();
-                //     }
-                // }
-
+                this.renderOrder = [];
+                this.renderEntity(this.rootEntity, this.rootEntity.components.render.property.canvas);
             }
         }
     });
