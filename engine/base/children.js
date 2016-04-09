@@ -49,7 +49,7 @@ window.engine = window.engine || {};
                             add = true;
                             entities.splice(i,0,aChildEntity);
                         }else {
-                            if (eHP.timestamp < eHP.timestamp) {
+                            if (eHP.timestamp < eHP.level) {
                                 add = true;
                                 entities.splice(i, 0, aChildEntity);
                             }

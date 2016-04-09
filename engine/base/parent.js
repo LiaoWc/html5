@@ -78,8 +78,7 @@ window.engine = window.engine || {};
                 entityRender.property.scaleY *= entityParentRender.property.scaleY;
                 entityRender.property.rotation += entityParentRender.property.rotation;
                 entityRender.property.alpha *= entityParentRender.property.alpha;
-                //entityRender.property.canvas = entityParentRender.property.canvas;
-
+                entityRender.property.canvas = entityParentRender.property.canvas;
                 entityRender.update();
             }
         }

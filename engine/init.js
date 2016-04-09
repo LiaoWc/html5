@@ -18,7 +18,6 @@ window.addEventListener('load', function () {
         }
         return flag;
     }
-
     engine.platform = IsPC() ? "Desktop" : "Mobile";
     console.log('window.load');
     var base = {
@@ -58,7 +57,7 @@ window.addEventListener('load', function () {
         files: [
             "action",
             // "animation",
-            "timer"
+            // "timer"
         ]
     }
 
@@ -72,7 +71,7 @@ window.addEventListener('load', function () {
             "system",
             "manager",
             "mainLoop",
-            "extend",
+            // "animation",
             // "timer"
         ]
     }
@@ -81,10 +80,10 @@ window.addEventListener('load', function () {
     var modules = [
         framework,
         base,
-        draw,
+        draw
         // draw,
-        io,
-        scheduler,
+        // io,
+        // scheduler,
         // assets,
     ];
     for (var i = 0, len = modules.length; i < len; ++i) {

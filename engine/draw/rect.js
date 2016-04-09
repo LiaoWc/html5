@@ -52,12 +52,13 @@ window.engine = window.engine || {};
                 var comNode = aComponent.entity.components.node;
                 var dx = comNode.property.width * comNode.property.anchorPointX;
                 var dy = comNode.property.height * comNode.property.anchorPointY;
-                context.translate(comRender.property.x * engine.dpr, comRender.property.y * engine.dpr);
-                context.scale(comRender.property.scaleX * engine.dpr, comRender.property.scaleX * engine.dpr);
+                context.translate(comRender.property.x, comRender.property.y);
                 context.rotate(Math.PI / 180 * comRender.property.rotation);
+                context.scale(comRender.property.scaleX, comRender.property.scaleY);
+                //context.drawImage(img, - dx, - dy);
                 context.globalAlpha = comRender.property.alpha;
 
-                //console.log("rect",aComponent.property.fillColor)
+                console.log("rect",dx,dy)
                 context.fillStyle = aComponent.property.fillColor;
                 context.fillRect(-dx, -dy, aComponent.property.width, aComponent.property.height);
                 if (aComponent.property.lineWidth != 0) {

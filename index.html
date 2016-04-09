@@ -2,15 +2,14 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-    <!--<script>-->
-        <!--var meta = document.createElement("meta");-->
-        <!--meta.name = "viewport";-->
-        <!--meta.content = "width=device-width," +-->
-                <!--"initial-scale=" + 1 / window.devicePixelRatio + "" +-->
-                <!--",user-scalable=no";-->
-        <!--document.head.appendChild(meta);-->
-    <!--</script>-->
+    <script>
+        var meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content = "width=device-width," +
+                "initial-scale=" + 1 / window.devicePixelRatio + "" +
+                ",user-scalable=no";
+        document.head.appendChild(meta);
+    </script>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="full-screen" content="yes"/>
     <meta name="screen-orientation" content="portrait"/>
@@ -18,18 +17,9 @@
     <meta name="360-fullscreen" content="true"/>
     <title>DuLi Engine</title>
     <style>
-        @font-face {
-            font-family: 'Nunito-Regular';
-            src: url(assets/Nunito-Regular.ttf) format('truetype');
-        }
-        @font-face {
-            font-family: 'MFYueYuan_Noncommercial-Regular';
-            src: url(assets/MFYueYuan_Noncommercial-Regular.ttf) format('truetype');
-        }
     </style>
 </head>
 <body oncontextmenu="return false;" style="overflow:hidden;padding:0; margin: 0; background: #fff;">
-<p id="text" style="opacity:0;font-family:MFYueYuan_Noncommercial-Regular;color: #f00;position: absolute;z-index: 3">.</p>
 <script>
     var list = [
         "engine/loader.js",
@@ -46,7 +36,6 @@
     for (var i in list) {
         _loadJs(list[i])
     }
-
 </script>
 </body>
 

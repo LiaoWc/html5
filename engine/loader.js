@@ -16,10 +16,7 @@ engine.loader = new (function () {
         this.xhr = new XMLHttpRequest();
     }
     connection.prototype.loadFile = function (aResource) {
-        if (aResource == null) {
-            return
-        }
-        this.xhr.open("GET", aResource.filePath + "/" + aResource.fileName + aResource.fileType + "?" + timestamp, true);
+        this.xhr.open("GET", aResource.filePath + "/" + aResource.fileName + aResource.fileType+"?"+timestamp, true);
         var self = this;
         var loader = engine.loader;
         this.xhr.onreadystatechange = function (event) {
