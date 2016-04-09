@@ -16,6 +16,7 @@ app.main = function () {
         text.property.fillText = "I'm Liao Wangcheng.";
         text.property.fontSize = 25;
         text.property.fontColor = "#f00";
+        text.property.frameWidth = 100;
         //text.property.fontFamily = "MFYueYuan_Noncommercial-Regular"
         text.update();
         comNode.property.width = text.property.width;
@@ -26,11 +27,12 @@ app.main = function () {
         engine.manager.registerSystems.children.addChild(rootStage, entity);
         var event = entity.addComponent("event");
         sysEvent.listen(entity, "rootStageResize", function (aEvent) {
-            var scaleX = rootStage.components.node.property.width * 0.8 / text.property.width;
-            var scaleY = rootStage.components.node.property.height * 0.15 / text.property.height;
-            var scale = Math.min(scaleX, scaleY);
-            text.property.fontSize = 25 * scale;
-            text.update();
+            //var scaleX = rootStage.components.node.property.width * 0.8 / text.property.width;
+            //var scaleY = rootStage.components.node.property.height * 0.15 / text.property.height;
+            //var scale = Math.min(scaleX, scaleY);
+            //text.property.fontSize = 25 * scale;
+
+            //text.update();
             comNode.property.x = aEvent.width / 2;
             comNode.property.y = aEvent.height / 2;
             comNode.property.width = text.property.width;
@@ -56,6 +58,7 @@ app.main = function () {
         text.property.fillText = "I'm Liao Wangcheng.";
         text.property.fontSize = 25 / 2;
         text.property.fontColor = "#f00";
+        text.property.frameWidth = 100;
         //text.property.fontFamily = "MFYueYuan_Noncommercial-Regular"
         text.update();
         comNode.property.width = text.property.width;
@@ -66,11 +69,15 @@ app.main = function () {
         engine.manager.registerSystems.children.addChild(rootStage, entity);
         var event = entity.addComponent("event");
         sysEvent.listen(entity, "rootStageResize", function (aEvent) {
+            console.log("rootStageResize")
             var scaleX = rootStage.components.node.property.width * 0.8 / text.property.width;
             var scaleY = rootStage.components.node.property.height * 0.15 / text.property.height;
             var scale = Math.min(scaleX, scaleY);
-            text.property.fontSize = 25 * scale;
-            text.update();
+            //text.property.fontSize = 25 * scale;
+            //text.update();
+            comNode.property.scaleX = scale;
+            comNode.property.scaleY = scale;
+            //text.update();
             comNode.property.x = aEvent.width / 2;
             comNode.property.y = aEvent.height / 4;
             comNode.property.width = text.property.width;
