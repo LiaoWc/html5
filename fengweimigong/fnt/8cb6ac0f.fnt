@@ -1,0 +1,14 @@
+info face="JungleFever" size=63 bold=0 italic=0 charset="" unicode=1 stretchH=100 smooth=1 aa=1 padding=0,0,0,0 spacing=1,1 outline=3
+common lineHeight=63 base=51 scaleW=256 scaleH=128 pages=1 packed=0 alphaChnl=1 redChnl=0 greenChnl=0 blueChnl=0
+page id=0 file="3623d44c.png"
+chars count=10
+char id=48   x=0     y=56    width=55    height=53    xoffset=0     yoffset=0     xadvance=55    page=0  chnl=15
+char id=49   x=198   y=55    width=38    height=53    xoffset=0     yoffset=0     xadvance=38    page=0  chnl=15
+char id=50   x=178   y=0     width=49    height=54    xoffset=0     yoffset=0     xadvance=49    page=0  chnl=15
+char id=51   x=141   y=0     width=36    height=55    xoffset=0     yoffset=0     xadvance=36    page=0  chnl=15
+char id=52   x=56    y=56    width=54    height=53    xoffset=0     yoffset=0     xadvance=54    page=0  chnl=15
+char id=53   x=157   y=56    width=40    height=53    xoffset=0     yoffset=0     xadvance=40    page=0  chnl=15
+char id=54   x=0     y=0     width=47    height=55    xoffset=0     yoffset=0     xadvance=47    page=0  chnl=15
+char id=55   x=111   y=56    width=45    height=53    xoffset=0     yoffset=0     xadvance=45    page=0  chnl=15
+char id=56   x=96    y=0     width=44    height=55    xoffset=0     yoffset=0     xadvance=44    page=0  chnl=15
+char id=57   x=48    y=0     width=47    height=55    xoffset=0     yoffset=0     xadvance=47    page=0  chnl=15

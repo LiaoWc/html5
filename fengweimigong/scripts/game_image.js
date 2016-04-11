@@ -1,0 +1,19 @@
+game_image = {
+ball_png:"images/90db7c00.png",
+bg_png:"images/50dbc89d.png",
+food_1_png:"images/d3c3ac22.png",
+food_2_png:"images/a9189746.png",
+food_3_png:"images/4cb9cdbf.png",
+food_4_png:"images/a592dba4.png",
+light_png:"images/46867738.png",
+logo_png:"images/92b1df81.png",
+maze_png:"images/1b2c8339.png",
+milk_1_png:"images/1c2798e4.png",
+milk_2_png:"images/1cbe4836.png",
+milk_3_png:"images/05763c1a.png",
+milk_4_png:"images/76a81fc5.png",
+score_png:"images/6e8d12e8.png",
+time_png:"images/4bd8f344.png",
+wait_png:"images/57fb9296.png",
+waiting_png:"images/f3afe747.png"
+}

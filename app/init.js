@@ -1,78 +1,69 @@
 window.app = window.app || {};
-app.init = function() {
-    console.log("game");
-    var scripts = {
-        path: "app",
-        type: ".js",
-        files: [
-            "main",
-            "mainScene",
-            "shapeDemo",
-        ]
-    }
-    var assets = {
-        path: "assets",
-        type: ".png",
-        files: [
-            "head",
-            "qr_shishen",
-            "jwyg1",
-            "bgTile"
-        ]
-    }
-    var modules = [
-        scripts,
-        assets,
-        // draw,
-        // io,
-        // scheduler,
-        // assets,
-    ];
-    for (var i = 0, len = modules.length; i < len; ++i) {
-        var module = modules[i];
-        var files = module.files;
-        for (var j = 0, len2 = files.length; j < len2; ++j) {
-            engine.loader.addResource({
-                filePath: module.path,
-                fileName: files[j],
-                fileType: module.type
-            });
-        }
-    }
+app.init = function () {
+    console.log("app.init");
+    //触摸系统
+    var sysEvent = engine.manager.registerSystems.event;
+    //事件系统
+    var sysTouch = engine.manager.registerSystems.touch;
+    //初始化Canvas
+    var canvas = function () {
+        var canvas = document.createElement("canvas");
+        canvas.id = "rootCanvas";
+        canvas.style.padding = "0";
+        canvas.style.margin = "0";
+        canvas.style.top = "0";
+        canvas.style.left = "0";
+        canvas.style.zIndex = 2;
+        canvas.style.position = "absolute";
+        var initCanvas = function () {
+            canvas.style.width = window.innerWidth;
+            canvas.style.height = window.innerHeight;
+            canvas.width = window.innerWidth * engine.dpr;
+            canvas.height = window.innerHeight * engine.dpr;
+            sysEvent.dispatch(entity, "rootCanvasResize", {
+                width: window.innerWidth,
+                height: window.innerHeight
+            })
+        };
+        window.addEventListener('resize', initCanvas, false);
+        initCanvas();
 
+        document.body.appendChild(canvas);
+        sysTouch.listen(canvas);
+        return canvas;
+    }();
+    //初始化根场景
+    var entity = engine.manager.newEntity();
+    entity.setTag("rootScene");
+    var cNode = entity.addComponent("node");
+    entity.addComponent("children");
+    var cRender = entity.components.render;
+    cRender.property.canvas = canvas;
+    var sRender = engine.manager.registerSystems.render;
+    sRender.rootEntity = entity;
 
-    engine.loader.onProgress = function(args) {
-        // console.log(args)
-    }
-    app.resource = {};
+    //设置适配方案
+    var rootStageInit = function () {
+        cNode.property.width = window.innerWidth;
+        var scale = window.innerWidth / cNode.property.width;
+        cNode.property.height = window.innerHeight / window.innerWidth * cNode.property.width;
+        cNode.property.scaleX = scale;
+        cNode.property.scaleY = scale;
+        cNode.update();
+    };
+    rootStageInit();
 
-    engine.loader.onLoaded = function(args) {
-        // console.log(args)
-        switch (args.fileType) {
-            case ".js":
-                //console.log(args.fileName)
-                eval(args.response)
-                break;
-            case ".png":
-                var img = new Image();
-                img.src = args.filePath + "/" + args.fileName + args.fileType;
-                engine.loader.total +=1;
-                img.onload = function (){
-                    engine.loader.loaded +=1;
-                    app.resource[args.filePath + "/" + args.fileName + args.fileType] = img;
-                    if (engine.loader.loaded == engine.loader.total) {
-                        engine.loader.queue = [];
-                        engine.loader.onFinish();
-                    }
-                }
-                break;
-        }
-    }
-    engine.loader.onFinish = function() {
+    //处理尺寸变化
+    var event = entity.addComponent("event");
+    sysEvent.listen(entity, "rootCanvasResize", function (aEvent) {
+        rootStageInit();
+        sysEvent.dispatch(entity, "rootSceneResize", {
+            width: cNode.property.width,
+            height: cNode.property.height
+        })
+    });
 
-        app.mainScene();
+    //初始化加载页面
+    app.loadingLayer();
 
-    }
-
-     engine.loader.load();
 }

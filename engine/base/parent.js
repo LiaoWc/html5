@@ -16,47 +16,19 @@ window.engine = window.engine || {};
         //onInit: function () {
         //    //拥有node的实体
         //},
-        onAdd: function (args) {
-            //组件加入时触发
-            //检测parent是否有children组件
-            //var childEntity = args.component.entity;
-            //var parentEntity = args.component.property.entity;
-            //if (parentEntity) {
-            //    if (parentEntity.components.children == null) {
-            //        var tChildren = engine.manager.newComponent({name: "children"});
-            //        parentEntity.addComponent(tChildren);
-            //        tChildren.property.entities[childEntity.id] = true;
-            //    } else {
-            //        var tChildren = parentEntity.getComponent({name: "children"});
-            //        tChildren.property.entities[childEntity.id] = true;
-            //    }
-            //}
-            //console.log(args.component.entity,parentEntity)
-
-        },
-        //onRemove: function (args) {
-        //    //组件移除时触发
+        //onAdd: function (args) {
         //},
-        onUpdate: function (args) {
-            //组件改变时触发
-            // var childEntity = args.component.entity;
-            // var parentEntity = args.component.property.entity;
-            // //console.log(childEntity.flag, parentEntity.flag);
-            // if (parentEntity) {
-            //     //console.log(parentEntity.getComponent({name: "children"}))
-            //     if (parentEntity.getComponent({name: "children"}) == null) {
-            //         //var tChildren = engine.manager.newComponent({name: "children"});
-            //         var tChildren = parentEntity.addComponent("children");
-            //         tChildren.property.entities[childEntity.id] = true;
-            //         tChildren.update();
-            //         //console.log(tChildren.property.entities)
-            //     } else {
-            //         var tChildren = parentEntity.getComponent({name: "children"});
-            //         tChildren.property.entities[childEntity.id] = true;
-            //     }
-            // }
-
+        onRemove: function (aComponent) {
+            //组件移除时触发
+            for(var i in aComponent.property.entity.components.children.property.entities){
+                if(aComponent.property.entity.components.children.property.entities[i] == aComponent.entity){
+                    aComponent.property.entity.components.children.property.entities.splice(i,1);
+                }
+            }
         },
+        //onUpdate: function (args) {
+        //
+        //},
         onLoop: function (aDelta) {
             //系统更新时触发
             //从改变的node中，检查是否有存在relation关系的节点
@@ -74,11 +46,12 @@ window.engine = window.engine || {};
                 //console.log(x,y,newX,newY)
                 entityRender.property.x = newX + entityParentRender.property.x;
                 entityRender.property.y = newY + entityParentRender.property.y;
+
                 entityRender.property.scaleX *= entityParentRender.property.scaleX;
                 entityRender.property.scaleY *= entityParentRender.property.scaleY;
                 entityRender.property.rotation += entityParentRender.property.rotation;
                 entityRender.property.alpha *= entityParentRender.property.alpha;
-                entityRender.property.canvas = entityParentRender.property.canvas;
+                //entityRender.property.canvas = entityParentRender.property.canvas;
                 entityRender.update();
             }
         }

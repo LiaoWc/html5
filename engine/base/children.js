@@ -49,7 +49,7 @@ window.engine = window.engine || {};
                             add = true;
                             entities.splice(i,0,aChildEntity);
                         }else {
-                            if (eHP.timestamp < eHP.level) {
+                            if (eHP.timestamp < eHP.timestamp) {
                                 add = true;
                                 entities.splice(i, 0, aChildEntity);
                             }
@@ -70,9 +70,12 @@ window.engine = window.engine || {};
             //组件加入时触发
             aComponent.property.entities = [];
         },
-        //onRemove: function (aComponent) {
-        //    //组件移除时触发
-        //},
+        onRemove: function (aComponent) {
+            //组件移除时触发
+            for(var i in aComponent.property.entities){
+                aComponent.property.entities[i].removeSelf();
+            }
+        },
         // onUpdate: function(aComponent) {
 
         // },
